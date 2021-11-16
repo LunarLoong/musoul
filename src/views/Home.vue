@@ -33,19 +33,24 @@
       <el-aside width="15%">
         <el-menu
             class="el-menu-vertical-demo"
+            :router="true"
+            :unique-opened="true"
+            :default-active="activePath"
             @open="handleOpen"
             @close="handleClose">
           <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
             <template slot="title">
-              <i class="el-icon-user"></i>
-              <span>{{item.navName}}</span>
+              <i :class="menuIcon[item.id]"></i>
+              <span style="font-size: 1.15em">{{item.navName}}</span>
             </template>
-            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id"><i class="el-icon-document-copy"></i> {{subItem.navName}}</el-menu-item>
+            <el-menu-item style="font-size: 0.95em" :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)"><i :class="subMenuIcon[subItem.id]"></i> {{subItem.navName}}</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <!-- 内容栏 -->
-      <el-main></el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
     <el-drawer
         title=""
@@ -111,10 +116,13 @@
 </template>
 
 <script>
+import { Message } from "element-ui";
 export default {
+
   name: "Home",
   created() {
     this.getMenuList();
+    this.activePath = window.sessionStorage.getItem("activePath");
   },
   data: function () {
     return {
@@ -122,6 +130,20 @@ export default {
       direction: 'rtl',
       username: 'LunarLoong',
       menuList: [],
+      menuIcon:{
+        '01':'el-icon-user',
+        '02':'el-icon-office-building',
+        '03':'el-icon-s-custom',
+      },
+      subMenuIcon:{
+        '11':'el-icon-document-checked',
+        '21':'el-icon-document',
+        '12':'el-icon-star-off',
+        '22':'el-icon-location-information',
+        '13':'el-icon-star-off',
+        '23':'el-icon-s-check',
+      },
+      activePath:'',
     }
   },
 
@@ -131,15 +153,17 @@ export default {
       this.$router.push('/login');
     },
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+
     },
     async getMenuList() {
       const {data:result} = await this.$http.get('menu');
       this.menuList = result.data;
-      console.log(result);
+    },
+    saveNavState(activePath){
+      window.sessionStorage.setItem('activePath',activePath);
     }
 
   }

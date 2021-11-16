@@ -5,6 +5,13 @@ Vue.use(VueRouter)
 
 import Login from '../views/Login'
 import Home from '../views/Home'
+import Welcome from "../components/Welcome";
+import OrderY from "../components/mine/OrderY";
+import OrderN from "../components/mine/OrderN";
+import MyGym from "../components/gym/MyGym";
+import ExpGym from "../components/gym/ExpGym";
+import MyCoach from "../components/coach/MyCoach";
+import ExpCoach from "../components/coach/ExpCoach";
 
 const router =  new VueRouter({
     routes: [
@@ -18,7 +25,18 @@ const router =  new VueRouter({
         },
         {
             path: '/home',
-            component: Home
+            component: Home,
+            redirect:'/welcome',
+            children:[
+                {path:'/welcome',component:Welcome},
+                {path:'/orderY',component:OrderY},
+                {path:'/orderN',component:OrderN},
+                {path:'/mygym',component:MyGym},
+                {path:'/expgym',component:ExpGym},
+                {path:'/mycoach',component:MyCoach},
+                {path:'/expcoach',component:ExpCoach},
+
+            ]
         }
     ]
 })
