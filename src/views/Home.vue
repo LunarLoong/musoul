@@ -31,7 +31,18 @@
     <el-container>
       <!-- 侧边栏 -->
       <el-aside width="15%">
-
+        <el-menu
+            class="el-menu-vertical-demo"
+            @open="handleOpen"
+            @close="handleClose">
+          <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
+            <template slot="title">
+              <i class="el-icon-user"></i>
+              <span>{{item.navName}}</span>
+            </template>
+            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id"><i class="el-icon-document-copy"></i> {{subItem.navName}}</el-menu-item>
+          </el-submenu>
+        </el-menu>
       </el-aside>
       <!-- 内容栏 -->
       <el-main></el-main>
@@ -92,7 +103,7 @@
         <el-button class="edit-btn" icon="el-icon-edit" size="mini" round>编辑</el-button>
       </div>
       <el-button
-          class="logout-btn">
+          class="logout-btn" @click="logout">
         退出登录
       </el-button>
     </el-drawer>
@@ -102,11 +113,15 @@
 <script>
 export default {
   name: "Home",
+  created() {
+    this.getMenuList();
+  },
   data: function () {
     return {
       drawer: false,
       direction: 'rtl',
-      username: 'LunarLoong'
+      username: 'LunarLoong',
+      menuList: [],
     }
   },
 
@@ -115,6 +130,17 @@ export default {
       window.sessionStorage.clear();
       this.$router.push('/login');
     },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    async getMenuList() {
+      const {data:result} = await this.$http.get('menu');
+      this.menuList = result.data;
+      console.log(result);
+    }
 
   }
 }
@@ -220,12 +246,12 @@ export default {
   border-radius: 0;
 }
 
-.logout-btn:hover{
+.logout-btn:hover {
   background: #24292F;
   color: #ffffff;
 }
 
-.edit-btn{
+.edit-btn {
   position: relative;
   bottom: 0;
   background: #ffffff;
@@ -235,7 +261,7 @@ export default {
   margin-top: 2px;
 }
 
-.edit-btn:hover{
+.edit-btn:hover {
   background: #24292F;
   color: #ffffff;
 }
