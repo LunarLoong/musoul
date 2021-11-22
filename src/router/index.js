@@ -12,6 +12,7 @@ import MyGym from "../components/gym/MyGym";
 import ExpGym from "../components/gym/ExpGym";
 import MyCoach from "../components/coach/MyCoach";
 import ExpCoach from "../components/coach/ExpCoach";
+import AddLesson from "@/components/AddLesson";
 
 const router =  new VueRouter({
     routes: [
@@ -35,7 +36,7 @@ const router =  new VueRouter({
                 {path:'/expgym',component:ExpGym},
                 {path:'/mycoach',component:MyCoach},
                 {path:'/expcoach',component:ExpCoach},
-
+                {path:'/addlesson',component:AddLesson}
             ]
         }
     ]
@@ -45,7 +46,7 @@ router.beforeEach((to,from,next) =>{
 
     if(to.path === '/login')
         return next()
-    const tokenStr = window.sessionStorage.getItem('token')
+    const tokenStr = window.sessionStorage.getItem('user')
 
     if(!tokenStr)
         return next('login')

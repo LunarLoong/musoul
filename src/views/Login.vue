@@ -35,7 +35,7 @@
           <input class="username-input" type="text" placeholder="请输入用户名..." v-model="loginForm.username"/>
           <input class="password-input" type="password" placeholder="请输入密码..." v-model="loginForm.password"/>
           <button class="submit-input" type="button" v-text="submitText" @click="loginRequest"> </button>
-          <p class="info" v-text="info"></p>
+          <p class="info">{{loginInfo}}</p>
         </form>
         <ol class="third-party-login">
           <li>
@@ -102,7 +102,8 @@
           <p class="description" v-text="description"></p>
             <input class="username-input" type="text" placeholder="请输入用户名..." v-model="registerForm.username"/>
             <input class="password-input" type="password" placeholder="请输入密码..." v-model="registerForm.password"/>
-            <button class="submit-input" type="button" v-text="submitText"> </button>
+            <button class="submit-input" type="button" @click="registerRequest">注册</button>
+          <p class="info">{{registerInfo}}</p>
         </form>
         <ol class="third-party-login">
           <li>
@@ -147,7 +148,8 @@ export default {
       title: '欢迎登录',
       description: '是科技~他加了科技。',
       submitText: '登录',
-      info: ' ',
+      loginInfo: ' ',
+      registerInfo: ' ',
       gotoSignUp: '没有账号？点击此处注册。',
       gotoSignIn: '已有账号？点击此处登录。',
       loginForm:{
@@ -169,21 +171,28 @@ export default {
     },
     loginRequest: async function(){
       const res = await this.$http.post("login",this.loginForm);
-
       if(res.status !== 200){
-        this.info = "登陆失败，请检查用户名和密码是否正确。";
+        this.loginInfo = "登陆失败，请检查用户名和密码是否正确。";
       }
       else{
         this.info = " ";
         //保存 token
-        window.sessionStorage.setItem("token",res.data.token);
+        window.sessionStorage.setItem("user",JSON.stringify(res.data));
         // 跳转到 主页
         this.$router.push("/home");
       }
 
+    },
+    registerRequest: async function(){
+      const res = await this.$http.post("register",this.registerForm);
+
+      if(res.status !== 200){
+        this.registerInfo = "注册失败";
+      }
+      else{
+        this.registerInfo = "注册成功！";
+      }
     }
-
-
 
   }
 }

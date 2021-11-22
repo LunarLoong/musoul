@@ -38,6 +38,10 @@
             :default-active="activePath"
             @open="handleOpen"
             @close="handleClose">
+          <el-menu-item index="/welcome" key="00" @click="saveNavState('/welcome')">
+            <i class="el-icon-position"></i>
+            <span slot="title">首页</span>
+          </el-menu-item>
           <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
             <template slot="title">
               <i :class="menuIcon[item.id]"></i>
@@ -45,6 +49,10 @@
             </template>
             <el-menu-item style="font-size: 0.95em" :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)"><i :class="subMenuIcon[subItem.id]"></i> {{subItem.navName}}</el-menu-item>
           </el-submenu>
+          <el-menu-item index="/addlesson" key="04" @click="saveNavState('/addlesson')">
+            <i class="el-icon-document-add"></i>
+            <span slot="title">添加课程</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <!-- 内容栏 -->
@@ -83,26 +91,26 @@
       </svg>
       <div class="self-info">
         <p class="username">欢迎你，{{ username }} :)</p>
-        <el-avatar src="https://avatars.githubusercontent.com/u/63567700?v=4" class="head-image"></el-avatar>
+        <el-avatar :src="userImage" class="head-image"></el-avatar>
         <div class="info-list">
           <span class="info-item">
             <span class="info-label">当前目标</span>
-            <span class="info-content">增肌</span>
+            <span class="info-content">{{goal}}</span>
           </span>
           <el-divider></el-divider>
           <span class="info-item">
             <span class="info-label">BMI</span>
-            <span class="info-content">15.2</span>
+            <span class="info-content">{{ bmi }}</span>
           </span>
           <el-divider></el-divider>
           <span class="info-item">
             <span class="info-label">使用次数</span>
-            <span class="info-content">18</span>
+            <span class="info-content">{{usage}}</span>
           </span>
           <el-divider></el-divider>
           <span class="info-item">
             <span class="info-label">注册日期</span>
-            <span class="info-content">2000.11.23</span>
+            <span class="info-content">{{registerDate}}</span>
           </span>
         </div>
         <el-button class="edit-btn" icon="el-icon-edit" size="mini" round>编辑</el-button>
@@ -116,11 +124,10 @@
 </template>
 
 <script>
-import { Message } from "element-ui";
 export default {
-
   name: "Home",
   created() {
+    this.getInfo();
     this.getMenuList();
     this.activePath = window.sessionStorage.getItem("activePath");
   },
@@ -128,7 +135,13 @@ export default {
     return {
       drawer: false,
       direction: 'rtl',
-      username: 'LunarLoong',
+      username: '',
+      bmi:'',
+      goal:'',
+      usage:'',
+      registerDate:'',
+      userImage:'',
+
       menuList: [],
       menuIcon:{
         '01':'el-icon-user',
@@ -164,7 +177,18 @@ export default {
     },
     saveNavState(activePath){
       window.sessionStorage.setItem('activePath',activePath);
-    }
+    },
+    async getInfo() {
+      var str = window.sessionStorage.getItem('user');
+      var data = JSON.parse(str.substring(1,str.length-1));
+      console.log(data);
+      this.username = data.username;
+      this.goal = data.goal;
+      this.bmi = data.bmi;
+      this.usage = data.usage;
+      this.registerDate = data.register_date;
+      this.userImage = data.user_image;
+    },
 
   }
 }
