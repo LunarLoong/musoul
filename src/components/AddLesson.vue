@@ -8,25 +8,27 @@
     <div class="content-container" v-show="active === 0">
       <div style="margin-left: 8vw;padding-top: 100px;">
         <h3 style="margin-bottom: 20px">我的健身房：</h3>
-        <el-radio style="margin-bottom: 20px" v-model="gym" :label="item.gymsid" v-for="item in myGymData" border>{{item.gym_name}}</el-radio>
+        <el-radio style="margin-bottom: 20px" v-model="gym" :label="item.gym_name" v-for="item in myGymData" @change="saveGym(item.gymsid)" border>{{item.gym_name}}</el-radio>
         <h3 style="margin-bottom: 20px">推荐附近健身房：</h3>
-        <el-radio v-model="gym" :label="item.gymsid" v-for="item in gymsData" border>{{item.gym_name}}</el-radio>
+        <el-radio v-model="gym" :label="item.gym_name" v-for="item in gymsData" @change="saveGym(item.gymsid)" border>{{item.gym_name}}</el-radio>
       </div>
       <el-button style="margin-top: 12px;position: absolute;bottom: 80px;left: 54vw" @click="next">下一步</el-button>
     </div>
     <div class="content-container" v-show="active === 1">
       <div style="margin-left: 8vw;padding-top: 100px;">
         <h3 style="margin-bottom: 20px">我的教练：</h3>
-        <el-radio style="margin-bottom: 20px" v-model="coach" :label="item.coachsid" v-for="item in myCoachData" border>{{item.coach_name}}</el-radio>
+        <el-radio style="margin-bottom: 20px"  v-model="coach" :label="item.coach_name" v-for="item in myCoachData" border @change="saveCoach(item.coachsid)">{{item.coach_name}}</el-radio>
         <h3 style="margin-bottom: 20px">推荐附近教练：</h3>
-        <el-radio v-model="coach" :label="item.coachsid" v-for="item in coachsData" border>{{item.coach_name}}</el-radio>
+        <el-radio v-model="coach" :label="item.coach_name" v-for="item in coachsData" border @change="saveCoach(item.coachsid)">{{item.coach_name}}</el-radio>
+        <el-radio v-model="coach" :label="'未安排'" border @change="saveCoach(0)" style="margin-top: 20px">不安排</el-radio>
       </div>
       <el-button style="margin-top: 12px;position: absolute;bottom: 80px;left: 54vw" @click="next">下一步</el-button>
     </div>
-    <div class="content-container" v-show="active === 2">2
-      <el-button style="margin-top: 12px;">发送订单</el-button>
+    <div class="content-container" v-show="active === 2">
+      <h3 style="padding-bottom: 20px;margin-left: 20vw;padding-top: 25vh">选择的健身房：{{gym}}</h3>
+      <h3 style="padding-bottom: 20px;margin-left: 20vw">选择的教练：{{coach}}</h3>
+      <el-button style="margin-top: 12px;margin-left: 25vw" @click="sendOrder()">发送订单</el-button>
     </div>
-    <h3>{{gym}} 111</h3>
   </div>
 </template>
 
@@ -44,6 +46,8 @@ export default {
       active: 0,
       gym: '',
       coach:'',
+      gymSaved:'',
+      coachSaved:'',
       gymsData:[],
       myGymData:[],
       coachsData:[],
@@ -73,8 +77,8 @@ export default {
       var str = window.sessionStorage.getItem('user');
       var data = JSON.parse(str.substring(1, str.length - 1));
       const result = await this.$http.get('expcoachs/' + data.fav_coach);
-      this.coachData = result.data;
-      console.log(this.coachData);
+      this.coachsData = result.data;
+      console.log(this.coachsData);
     },
     async getMyCoach() {
       var str = window.sessionStorage.getItem('user');
@@ -83,6 +87,24 @@ export default {
       this.myCoachData = result.data;
       console.log(this.myCoachData);
     },
+    saveGym(key){
+      this.gymSaved = key;
+    },
+    saveCoach(key){
+      this.coachSaved = key;
+    },
+    async sendOrder(){
+      var str = window.sessionStorage.getItem('user');
+      var data = JSON.parse(str.substring(1, str.length - 1));
+      const res = await this.$http.get('sendorder/' + data.usersid + "/" + this.gym + "/" + this.coach);
+      if(res.status !== 200){
+        alert("error");
+      }
+      else{
+        alert("添加订单成功！");
+        location.reload();
+      }
+    }
 
 
   }
